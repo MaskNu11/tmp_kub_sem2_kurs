@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 import logging
 import asyncio
 from sqlalchemy import select
-from models import Base, User
-from orm_quary import orm_add_user, urm_quared_get_user_all
+from db.models import Base, User
+from db.orm_quary import orm_add_user, urm_quared_get_user_all
 import json
 
 

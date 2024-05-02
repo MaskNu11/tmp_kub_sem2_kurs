@@ -2,8 +2,8 @@ import asyncio
 import json
 import tkinter as tk
 
-from engine import SESSION_MAKER, create_db
-from orm_quary import orm_add_user, urm_quared_get_user_all
+from db.engine import SESSION_MAKER, create_db
+from db.orm_quary import orm_add_user, urm_quared_get_user_all
 
 
 def read_json_file(file_path):

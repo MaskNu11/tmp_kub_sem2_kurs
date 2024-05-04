@@ -1,6 +1,8 @@
 from db.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import cast, Integer
 from sqlalchemy import select, update, delete
+from sqlalchemy import extract
 
 
 async def urm_quared_get_user_all(session):
@@ -9,6 +11,12 @@ async def urm_quared_get_user_all(session):
     result = result.scalars().all()
     return result
 
+async def orm_query_get_user(session, name):
+
+    query = select(User).where(cast(extract('year', User.birthday), Integer) == int(name))
+    result = await session.execute(query)
+    result = result.scalars().all()
+    return result
 
 import json
 

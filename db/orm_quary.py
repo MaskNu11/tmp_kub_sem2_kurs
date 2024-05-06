@@ -11,9 +11,23 @@ async def urm_quared_get_user_all(session):
     result = result.scalars().all()
     return result
 
-async def orm_query_get_user(session, name):
+async def orm_query_get_data_from_year(session, year):
 
-    query = select(User).where(cast(extract('year', User.birthday), Integer) == int(name))
+    query = select(User).where(cast(extract('year', User.birthday), Integer) == int(year))
+    result = await session.execute(query)
+    result = result.scalars().all()
+    return result
+
+async def orm_query_get_data_from_user(session, name):
+
+    query = select(User).where(User.name == name)
+    result = await session.execute(query)
+    result = result.scalars().all()
+    return result
+
+async def orm_query_get_data_from_project(session, project):
+
+    query = select(User).where(User.project == project)
     result = await session.execute(query)
     result = result.scalars().all()
     return result

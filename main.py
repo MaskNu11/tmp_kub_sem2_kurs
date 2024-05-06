@@ -2,19 +2,20 @@ import asyncio
 import json
 import tkinter as tk
 
+from tkinter import ttk  # Импортируем модуль ttk для использования Combobox
 from db.engine import SESSION_MAKER, create_db
-from db.orm_quary import (
-    orm_add_user, 
-    urm_quared_get_user_all,
-    orm_query_get_user,
+
+from visual import (
+    visual_get_data_from_user,
+    visual_get_data_from_project,
+    visual_get_data_from_year,
     )
-from visual import visual_get_users
 
 
-def read_json_file(file_path):
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-    return data
+# def read_json_file(file_path):
+#     with open(file_path, 'r') as file:
+#         data = json.load(file)
+#     return data
 
 # async def main(output_widget):
 #     await create_db()
@@ -32,16 +33,19 @@ def read_json_file(file_path):
 #         for i in rows:
 #             print(i.name)
 
-
-async def get_data_and_display(output_widget, entry):
-    current_task = None  # Определение переменной current_task внутри функции
-    if current_task and not current_task.done():
+async def get_data_and_display(output_widget, entry, selection, task):
+    if task and not task.done():
         return
-    username = entry.get()
-    if not username:
+    value = entry.get()
+    if not value:
         return
-    current_task = asyncio.create_task(visual_get_users(output_widget, username))
-
+    if selection == "ФИО":
+        task = asyncio.create_task(visual_get_data_from_user(output_widget, value))
+    elif selection == "Название проекта":
+        task = asyncio.create_task(visual_get_data_from_project(output_widget, value))
+    elif selection == "Год":
+        task = asyncio.create_task(visual_get_data_from_year(output_widget, value))
+    entry.delete(0, tk.END)  # Очищаем поле ввода
 
 async def main():
     app = tk.Tk()
@@ -53,17 +57,18 @@ async def main():
     entry_frame = tk.Frame(app)
     entry_frame.pack()
 
-    entry0 = tk.Entry(entry_frame)
-    entry0.grid(row=0, column=0)
+    # Создаем Combobox для выбора категории
+    categories = ["ФИО", "Название проекта", "Год"]
+    selected_category = tk.StringVar()
+    category_combobox = ttk.Combobox(entry_frame, textvariable=selected_category, values=categories, width=20)
+    category_combobox.grid(row=0, column=0)
 
-    button0 = tk.Button(entry_frame, text="Достать данные0", command=lambda: asyncio.create_task(get_data_and_display(output_text, entry0)))
-    button0.grid(row=0, column=1)
+    entry = tk.Entry(entry_frame, width=20)  
+    entry.grid(row=0, column=1)
 
-    entry1 = tk.Entry(entry_frame)
-    entry1.grid(row=0, column=2)
-
-    button1 = tk.Button(entry_frame, text="Достать данные1", command=lambda: asyncio.create_task(get_data_and_display(output_text, entry1)))
-    button1.grid(row=0, column=3)
+    task = None
+    button = tk.Button(entry_frame, text="Получить данные", command=lambda: asyncio.create_task(get_data_and_display(output_text, entry, selected_category.get(), task)), width=20)  # Увеличиваем ширину кнопки
+    button.grid(row=0, column=2)
 
     async def update_tkinter():
         while True:
